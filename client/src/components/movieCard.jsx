@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Card from '@mui/material/Card';
 import CardMedia from '@mui/material/CardMedia';
 import CardContent from '@mui/material/CardContent';
@@ -12,23 +12,32 @@ import axios from "axios";
 
 
 export default function MovieCard(props){
+  const [data,setData] = useState();
+  useEffect(()=>{
+      setData(props.movie);
+    },[])
   let navigate = useNavigate();
     const like = ()=>{
           
-        axios.post("http://localhost:3001/movies/upvote",{_id: props.movie._id ,upvote:(props.movie.upvote+1) }).then(result=>{
+        axios.post("http://localhost:3001/movies/upvote",{_id: props.movie._id ,upvote:( data?.upvote+1) }).then(result=>{
           // console.log(result.data.data);
           props.movie.upvote = props.movie.upvote+1;
+          // data?.upvote = data?.upvote+1;
           // setData(result.data.data[0]);
+          setData({...data,upvote:data?.upvote+1})
       }).catch(err=>{
           console.log(err);
       })
     }
     const dislike = ()=>{
         
-      axios.post("http://localhost:3001/movies/downvote",{_id: props.movie._id ,downvote:(props.movie.downvote+1) }).then(result=>{
+      axios.post("http://localhost:3001/movies/downvote",{_id: props.movie._id ,downvote:(data?.downvote+1) }).then(result=>{
         // console.log(result.data.data);
         // setData(result.data.data[0]);
-        props.movie.downvote = props.movie.downvote+1;
+        // props.movie.downvote = props.movie.downvote+1;
+        // data?.downvote = data?.downvote+1
+        setData({...data,downvote:data?.downvote +1})
+      }).catch(err=>{
     }).catch(err=>{
         console.log(err);
     })
@@ -60,8 +69,8 @@ export default function MovieCard(props){
 
             </CardContent>
             <CardActions>
-        <Button size="small" onClick={()=>like()}>{props.movie.upvote}<ThumbUpIcon></ThumbUpIcon></Button>
-        <Button size="small" onClick={()=>dislike()}>{props.movie.downvote}<ThumbDownAltIcon/></Button>
+        <Button size="small" onClick={()=>like()}>{data?.upvote}<ThumbUpIcon></ThumbUpIcon></Button>
+        <Button size="small" onClick={()=>dislike()}>{data?.downvote}<ThumbDownAltIcon/></Button>
       </CardActions>
         </Card>
     )
